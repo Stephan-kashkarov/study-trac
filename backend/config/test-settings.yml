@@ -1,0 +1,4 @@
+database:
+  database: backend_test
+
+auth-dummy-login: true
