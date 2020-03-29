@@ -1,13 +1,31 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  // Link
+} from "react-router-dom";
+
+import Auth from './components/Auth'
+// import Dashboard from './components/Dashboard'
+// import Schedule from './components/Schedule'
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Router>
+    <Switch>
+      {/* <Route path="/dashboard">
+        <Dashboard />
+      </Route>
+      <Route path="/schedule/:sid">
+        <Schedule />
+      </Route> */}
+      <Route path="/">
+        <Auth />
+      </Route>
+    </Switch>
+  </Router>,
   document.getElementById('root')
 );
 
