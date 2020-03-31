@@ -10,7 +10,7 @@
 
 module Foundation where
 
-import Database.Persist.MongoDB hiding (master)
+import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Import.NoFoundation
 import Control.Monad.Logger        (LogSource)
 
@@ -48,7 +48,7 @@ mkYesodData "App" $(parseRoutesFile "config/routes")
 
 -- | A convenient synonym for database access functions.
 type DB a = forall (m :: * -> *).
-    (MonadIO m) => ReaderT MongoContext m a
+    (MonadIO m) => ReaderT SqlBackend m a
 
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
@@ -93,14 +93,15 @@ instance Yesod App where
 
 -- How to run database actions.
 instance YesodPersist App where
-    type YesodPersistBackend App = MongoContext
-    runDB :: ReaderT MongoContext Handler a -> Handler a
+    type YesodPersistBackend App = SqlBackend
+    runDB :: SqlPersistT Handler a -> Handler a
     runDB action = do
         master <- getYesod
-        runMongoDBPool
-            (mgAccessMode $ appDatabaseConf $ appSettings master)
-            action
-            (appConnPool master)
+        runSqlPool action $ appConnPool master
+
+instance YesodPersistRunner App where
+    getDBRunner :: Handler (DBRunner App, Handler ())
+    getDBRunner = defaultGetDBRunner appConnPool
 
 
 
